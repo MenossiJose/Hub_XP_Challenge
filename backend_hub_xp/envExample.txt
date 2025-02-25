@@ -1,0 +1,6 @@
+MONGODB_URI=yourURI
+AWS_ACCESS_KEY_ID=yourkey
+AWS_SECRET_ACCESS_KEY=yoursecretkey
+AWS_ENDPOINT=http://localhost:4566
+AWS_S3_REGION=sa-east-1
+AWS_BUCKET_NAME=products-images
