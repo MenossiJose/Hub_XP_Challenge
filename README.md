@@ -81,7 +81,7 @@ cd \Hub_XP_Challenge\backend_hub_xp\src\serverless\lambda
 Após isso siga a documentação presente no site para configurar suas credencias aws e rodar a aplicação.
 A mesma se conecta com mongoDB para criar relatórias de forma assíncrona.
 
-###CRUD
+### CRUD
 Todas entidades criadas possuem CRUD e também validação de dados usado DTOs para cada rota.
 
 ## Endpoints Disponíveis
