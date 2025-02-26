@@ -39,7 +39,6 @@ export class UploadService {
     mimetype: string,
   ): Promise<string> {
     const bucketName = this.configService.getOrThrow<string>('AWS_BUCKET_NAME');
-    //this.logger.debug(`Valor do bucket lido: ${bucketName}`);
     try {
       await this.s3Client.send(
         new PutObjectCommand({
@@ -49,12 +48,19 @@ export class UploadService {
           ContentType: mimetype,
         }),
       );
+
       // Monta a URL do arquivo considerando que o endpoint já aponta para o S3 (ou LocalStack)
       const endpoint = this.configService.get<string>('AWS_ENDPOINT');
       if (!endpoint) {
         throw new InternalServerErrorException('AWS_ENDPOINT is not defined');
       }
-      const fileUrl = `${endpoint.replace(/\/$/, '')}/${bucketName}/${fileName}`;
+
+      // Replace localstack with localhost in the URL for browser access
+      const browserAccessibleEndpoint = endpoint
+        .replace(/\/$/, '')
+        .replace('localstack', 'localhost');
+      const fileUrl = `${browserAccessibleEndpoint}/${bucketName}/${fileName}`;
+
       return fileUrl;
     } catch (error) {
       this.logger.error('Erro ao enviar arquivo para o S3', error);

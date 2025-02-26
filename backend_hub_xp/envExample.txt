@@ -1,6 +1,6 @@
-MONGODB_URI=yourURI
-AWS_ACCESS_KEY_ID=yourkey
-AWS_SECRET_ACCESS_KEY=yoursecretkey
+MONGODB_URI=mongodb://localhost:27017/ecommerce
+AWS_ACCESS_KEY_ID="test"
+AWS_SECRET_ACCESS_KEY="test"
+AWS_DEFAULT_REGION="us-east-1"
 AWS_ENDPOINT=http://localhost:4566
-AWS_S3_REGION=sa-east-1
-AWS_BUCKET_NAME=products-images
+AWS_BUCKET_NAME=meu-bucket-local

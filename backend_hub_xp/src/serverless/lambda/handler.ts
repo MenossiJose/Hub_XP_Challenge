@@ -1,5 +1,34 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+import mongoose, { Document, Schema } from 'mongoose';
+
+// Define TypeScript interfaces
+interface IProduct extends Document {
+  name: string;
+  description?: string;
+  price: number;
+  categoryIds: mongoose.Types.ObjectId[];
+  imageUrl?: string;
+}
+
+interface IOrder extends Document {
+  date: Date;
+  productIds: mongoose.Types.ObjectId[];
+  total: number;
+}
+
+interface DailySalesEntry {
+  totalAmount: number;
+  orderCount: number;
+}
+
+interface ProductSalesEntry {
+  count: number;
+  totalAmount: number;
+}
+
+interface SalesReport {
+  dailySales: Record<string, DailySalesEntry>;
+  productSales: Record<string, ProductSalesEntry>;
+}
 
 // Definir os schemas de forma simplificada
 const ProductSchema = new Schema({
@@ -17,19 +46,20 @@ const OrderSchema = new Schema({
 });
 
 // Definir os modelos
-let Product, Order;
+let Product: mongoose.Model<IProduct>;
+let Order: mongoose.Model<IOrder>;
 
 // Função para conectar ao MongoDB
-const connectToDatabase = async (uri) => {
+const connectToDatabase = async (uri: string) => {
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
+    } as mongoose.ConnectOptions);
 
     // Inicializar modelos após a conexão
-    Product = mongoose.model('Product', ProductSchema);
-    Order = mongoose.model('Order', OrderSchema);
+    Product = mongoose.model<IProduct>('Product', ProductSchema);
+    Order = mongoose.model<IOrder>('Order', OrderSchema);
   }
   return {
     Product,
@@ -37,13 +67,13 @@ const connectToDatabase = async (uri) => {
   };
 };
 
-// Função para gerar relatório de vendas
-const generateSalesReport = async (orders) => {
+// Renamed the helper function to avoid naming conflict
+const createSalesReport = async (orders: IOrder[]): Promise<SalesReport> => {
   // Relatório diário
-  const dailySales = {};
+  const dailySales: Record<string, DailySalesEntry> = {};
 
   // Relatório por produto
-  const productSales = {};
+  const productSales: Record<string, ProductSalesEntry> = {};
 
   // Processar pedidos
   for (const order of orders) {
@@ -87,7 +117,7 @@ const generateSalesReport = async (orders) => {
 };
 
 // Handler da função Lambda
-exports.generateSalesReport = async (event, context) => {
+export const generateSalesReport = async (event: any, context: any) => {
   // Importante para evitar que a conexão fique aberta
   context.callbackWaitsForEmptyEventLoop = false;
 
@@ -102,7 +132,6 @@ exports.generateSalesReport = async (event, context) => {
     const { Order } = await connectToDatabase(uri);
 
     // Definir o período do relatório (padrão: últimos 30 dias)
-    // Usando 'let' em vez de 'const' para permitir reatribuições
     let endDate = new Date();
     let startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
@@ -123,16 +152,16 @@ exports.generateSalesReport = async (event, context) => {
     }).populate('productIds');
 
     // Gerar o relatório de vendas
-    const report = await generateSalesReport(orders);
+    const report = await createSalesReport(orders); // Updated function name here
 
     // Adicionar informações de resumo
     const totalOrderCount = Object.values(report.dailySales).reduce(
-      (sum, day) => sum + day.orderCount,
+      (sum, day: DailySalesEntry) => sum + day.orderCount,
       0,
     );
 
     const totalSalesAmount = Object.values(report.dailySales).reduce(
-      (sum, day) => sum + day.totalAmount,
+      (sum, day: DailySalesEntry) => sum + day.totalAmount,
       0,
     );
 
@@ -160,7 +189,7 @@ exports.generateSalesReport = async (event, context) => {
         productSales: report.productSales,
       }),
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao gerar relatório de vendas:', error);
 
     return {
