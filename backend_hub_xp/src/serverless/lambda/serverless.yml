@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   environment:
-    MONGODB_URI: http://localhost:4566
+    MONGODB_URI: ${env:MONGODB_URI}
   iam:
     role:
       statements:
