@@ -20,7 +20,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "skipLibCheck": true,
+      "noEmitOnError": false,
+      "noImplicitAny": false,
+      "useUnknownInCatchVariables": false
+    }
   },
   "include": ["src"]
 }

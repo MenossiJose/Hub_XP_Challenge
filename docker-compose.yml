@@ -1,19 +1,104 @@
 services:
+  # MongoDB service
   mongodb:
     image: mongo
     ports:
       - "27017:27017"
     volumes:
       - ./backend_hub_xp/data/mongo:/data/db
+    networks:
+      - hub-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017 --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # LocalStack for AWS services emulation (S3)
   localstack:
     container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    image: localstack/localstack
+    image: localstack/localstack:latest
     ports:
-      - "127.0.0.1:4566:4566"
-      - "127.0.0.1:4510-4559:4510-4559"
+      - "4566:4566"
     environment:
-
-      - DEBUG=${DEBUG:-0}
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR:-/tmp}/localstack
+      - LAMBDA_EXECUTOR=local
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./backend_hub_xp/volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - hub-network
+    healthcheck:
+      test: "curl -f http://localhost:4566/_localstack/health || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Initialize AWS resources in LocalStack
+  init-aws-resources:
+    image: amazon/aws-cli
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    entrypoint: /bin/sh
+    command: >
+      -c " aws --endpoint-url=http://localstack:4566 s3 mb s3://meu-bucket-local &&  aws --endpoint-url=http://localstack:4566 s3api put-bucket-acl --bucket meu-bucket-local --acl public-read &&  echo 'AWS resources initialized' "
+    networks:
+      - hub-network
+
+  # Backend NestJS service
+  backend:
+    build:
+      context: ./backend_hub_xp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+      init-aws-resources:
+        condition: service_completed_successfully
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ENDPOINT=http://localstack:4566
+      - AWS_BUCKET_NAME=meu-bucket-local
+    networks:
+      - hub-network
+
+  # Frontend React service
+  frontend:
+    build:
+      context: ./frontend_hub_xp
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:5173/
+      - VITE_S3_ENDPOINT=http://localhost:4566
+      - TSC_COMPILE_ON_ERROR=true
+    networks:
+      - hub-network
+
+networks:
+  hub-network:
+    driver: bridge
