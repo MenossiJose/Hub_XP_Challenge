@@ -59,16 +59,125 @@ npm run test:e2e
 # Cobertura de testes
 npm run test:cov
 ```
-
-### Build de Produção
-
-```bash
-# Construir para produção
-npm run build
-
-# Executar servidor de produção
-npm run start:prod
+### População de Dados Em Massa
+Para a aplicação funcionar corretamenta execute o script presente em:
+``` bash
+cd \Hub_XP_Challenge\backend_hub_xp\src\scripts\seed.ts
 ```
+Com o comando:
+``` bash
+npx ts-node scripts/seed.ts
+```
+
+### Lambda
+Conforme o requisito do desafio fora criado um uma função assíncrona através
+do serverless e com o uso do aws Lambda, o handler específico criado 
+processa relatórios de vendas (com base nos Orders).
+
+Para poder usar a aplicação se direciona a:
+``` bash
+cd \Hub_XP_Challenge\backend_hub_xp\src\serverless\lambda
+```
+Após isso siga a documentação presente no site para configurar suas credencias aws e rodar a aplicação.
+A mesma se conecta com mongoDB para criar relatórias de forma assíncrona.
+
+### CRUD
+Todas entidades criadas possuem CRUD e também validação de dados usado DTOs para cada rota.
+
+## Endpoints Disponíveis
+
+A API possui os seguintes endpoints principais:
+
+### **1. Produtos (/products)**
+
+| Método | Rota               | Descrição                          |
+|---------|------------------|--------------------------------|
+| POST    | `/products`      | Criar um novo produto        |
+| GET     | `/products`      | Listar todos os produtos     |
+| GET     | `/products/:id`  | Buscar um produto pelo ID    |
+| PATCH   | `/products/:id`  | Atualizar um produto pelo ID |
+| DELETE  | `/products/:id`  | Deletar um produto pelo ID   |
+
+### **2. Categorias (/categories)**
+
+| Método | Rota                  | Descrição                          |
+|---------|---------------------|--------------------------------|
+| POST    | `/categories`       | Criar uma nova categoria      |
+| GET     | `/categories`       | Listar todas as categorias    |
+| GET     | `/categories/:id`   | Buscar uma categoria pelo ID  |
+| PATCH   | `/categories/:id`   | Atualizar uma categoria pelo ID |
+| DELETE  | `/categories/:id`   | Deletar uma categoria pelo ID |
+
+### **3. Upload de Imagens (/upload)**
+
+| Método | Rota       | Descrição              |
+|---------|-----------|----------------------|
+| POST    | `/upload` | Fazer upload de uma imagem |
+
+### **4. Pedidos (/orders)**
+
+| Método | Rota              | Descrição                      |
+|---------|-----------------|------------------------------|
+| POST    | `/orders`       | Criar um novo pedido       |
+| GET     | `/orders`       | Listar todos os pedidos    |
+| GET     | `/orders/:id`   | Buscar um pedido pelo ID   |
+| PATCH   | `/orders/:id`   | Atualizar um pedido pelo ID |
+| DELETE  | `/orders/:id`   | Deletar um pedido pelo ID  |
+
+### **5. Dashboard (/dashboard)**
+
+| Método | Rota         | Descrição                         |
+|---------|------------|---------------------------------|
+| GET     | `/dashboard` | Acessar o dashboard de KPIs |
+
+---
+
+## **Instruções para Testes**
+
+### **CRUD de Produtos**
+1. **Criar um produto:**
+   ```sh
+   curl -X POST http://localhost:3000/products \
+        -H "Content-Type: application/json" \
+        -d '{"name": "Produto 1", "description": "Descrição do produto", "price": 99.90, "categoryIds": ["id_da_categoria"]}'
+   ```
+
+2. **Listar todos os produtos:**
+   ```sh
+   curl -X GET http://localhost:3000/products
+   ```
+
+3. **Buscar um produto pelo ID:**
+   ```sh
+   curl -X GET http://localhost:3000/products/{id}
+   ```
+
+4. **Atualizar um produto:**
+   ```sh
+   curl -X PATCH http://localhost:3000/products/{id} \
+        -H "Content-Type: application/json" \
+        -d '{"name": "Produto Atualizado"}'
+   ```
+
+5. **Deletar um produto:**
+   ```sh
+   curl -X DELETE http://localhost:3000/products/{id}
+   ```
+
+### **Upload de Imagem**
+1. **Fazer upload de uma imagem:**
+   ```sh
+   curl -X POST http://localhost:3000/upload \
+        -F "file=@/caminho/para/imagem.jpg"
+   ```
+
+### **Dashboard de KPIs**
+1. **Acessar os KPIs do dashboard:**
+   ```sh
+   curl -X GET http://localhost:3000/dashboard
+   ```
+
+---
 
 ### Principais Recursos
 
@@ -207,6 +316,9 @@ docker-compose up
 4. Acesso ao banco de dados:
    - MongoDB disponível em mongodb://localhost:27017
 
+5. Acesso ao localstack:
+   - Localstack disponível em http://localhost:4566
+
 ## Implantação
 
 Para implantação em produção:
@@ -215,11 +327,6 @@ Para implantação em produção:
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
 ```
 
-1. Construir imagens de produção:
-2. Implantar em seu ambiente de hospedagem:
-   - Usar Docker Swarm ou Kubernetes para orquestração
-   - Configurar variáveis de ambiente apropriadas
-   - Configurar HTTPS com certificados
 
 ## Recursos Adicionais
 
