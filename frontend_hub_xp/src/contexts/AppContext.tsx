@@ -103,12 +103,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Filter state
   const [ordersByPeriod, setOrdersByPeriod] = useState<OrdersByPeriod>({});
 
-  // Products methods
   const fetchProducts = async () => {
     setProductsLoading(true);
     try {
       const data = await getProducts();
-      // Mapeia os produtos para garantir que cada um tenha a propriedade "id"
       const mappedData = data.map((product: any) => ({
         ...product,
         id: product._id || product.id,
@@ -127,16 +125,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     try {
       let imageUrl = "";
 
-      // If productData is FormData with image file
       if (productData instanceof FormData && productData.get("image")) {
         const imageFile = productData.get("image") as File;
         imageUrl = await uploadFile(imageFile);
 
-        // Remove image file from FormData and add the URL
         productData.delete("image");
         productData.append("imageUrl", imageUrl);
 
-        // If categoryIds is a JSON string, parse it
         if (productData.get("categoryIds")) {
           const categoriesString = productData.get("categoryIds") as string;
           try {
@@ -153,7 +148,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
       const newProduct = await createProduct(productData);
 
-      // Mapeia o novo produto para incluir "id"
       const mappedProduct = {
         ...newProduct,
         id: newProduct._id || newProduct.id,
@@ -168,17 +162,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const editProduct = async (id: string, productData: FormData) => {
     try {
-      // Create a new object to store all data
       const productToUpdate = {};
 
-      // Extract all form data into an object
       for (let [key, value] of productData.entries()) {
         if (key === "categoryIds") {
           try {
-            // Parse and store the categoryIds
             productToUpdate[key] = JSON.parse(value as string);
           } catch (e) {
-            // Fallback: store as is
             productToUpdate[key] = value;
           }
         } else {
@@ -186,7 +176,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         }
       }
 
-      // Handle image if present
       if (productData.get("image")) {
         const imageFile = productData.get("image") as File;
         const imageUrl = await uploadFile(imageFile);
@@ -198,7 +187,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
       const updatedProduct = await updateProduct(id, productToUpdate);
 
-      // Ensure the updated product has "id"
       const mappedProduct = {
         ...updatedProduct,
         id: updatedProduct._id || updatedProduct.id,
@@ -225,7 +213,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
-  // Categories methods
   const fetchCategories = async () => {
     setCategoriesLoading(true);
     try {
@@ -290,7 +277,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
-  // Orders methods
   const fetchOrders = async () => {
     setOrdersLoading(true);
     try {
@@ -354,7 +340,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
-  // Metrics methods
   const fetchSalesMetrics = async (filters?: OrdersByPeriod) => {
     setMetricsLoading(true);
     try {

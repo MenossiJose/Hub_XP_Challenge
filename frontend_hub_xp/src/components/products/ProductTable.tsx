@@ -19,12 +19,12 @@ interface ProductTableProps {
   onDelete?: (id: string) => void;
 }
 
+//Had to create the table from scratch on this component due to infinite loop caused by the generic one
 const ProductTable: React.FC<ProductTableProps> = ({
   products = [],
   onEdit,
   onDelete,
 }) => {
-  // Super simplified table without any complex processing
   return (
     <TableContainer component={Paper}>
       <Table>

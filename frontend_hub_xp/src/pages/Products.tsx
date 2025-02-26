@@ -37,7 +37,6 @@ const Products = () => {
     type: "success",
   });
 
-  // Basic initial values - NO useMemo
   const initialFormValues = {
     name: "",
     description: "",
@@ -47,10 +46,9 @@ const Products = () => {
   };
 
   useEffect(() => {
-    // Only fetch once on mount
     fetchProducts();
     fetchCategories();
-  }, []); // Empty deps, not ideal but helps debug this issue
+  }, []);
 
   const handleOpenForm = () => {
     setOpenForm(true);
@@ -119,14 +117,12 @@ const Products = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
 
-  // Compute form values simply without hooks
   let formValues = initialFormValues;
   if (editMode && currentProduct) {
     formValues = {
       name: currentProduct.name,
       description: currentProduct.description,
       price: currentProduct.price,
-      // Pre-convert category objects to simple IDs
       categoryIds: Array.isArray(currentProduct.categoryIds)
         ? currentProduct.categoryIds.map((cat) =>
             typeof cat === "object" ? cat._id || cat.id : cat

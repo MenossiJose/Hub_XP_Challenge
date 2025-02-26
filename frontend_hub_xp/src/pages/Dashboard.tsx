@@ -66,8 +66,6 @@ const Dashboard = () => {
       )}
 
       <KPICards metrics={metrics} />
-
-      {/* You could add more dashboard components here, like charts or tables */}
     </Container>
   );
 };

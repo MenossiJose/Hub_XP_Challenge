@@ -47,7 +47,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
 }) => {
   const { categories } = useAppContext();
 
-  // Pre-process initial values to ensure categoryIds is always an array
   const processedValues = {
     ...initialValues,
     categoryIds: Array.isArray(initialValues.categoryIds)
@@ -63,7 +62,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
     formData.append("description", values.description);
     formData.append("price", values.price.toString());
 
-    // Ensure categoryIds is always an array before mapping
     const categoryIds = Array.isArray(values.categoryIds)
       ? values.categoryIds.map((cat: any) =>
           typeof cat === "object" ? cat._id || cat.id : cat
@@ -147,7 +145,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 onBlur={handleBlur}
                 input={<OutlinedInput label="Categorias" />}
                 renderValue={(selected) => {
-                  // Ensure selected is always an array
                   const selectedArray = Array.isArray(selected) ? selected : [];
 
                   return (

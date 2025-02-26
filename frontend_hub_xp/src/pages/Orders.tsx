@@ -37,16 +37,14 @@ const Orders = () => {
     type: "success",
   });
 
-  // Basic initial values
   const initialFormValues = {
     date: new Date().toISOString().split("T")[0],
     productIds: [],
   };
 
   useEffect(() => {
-    // Fetch orders and products on mount
     fetchOrders();
-    fetchProducts(); // We need products for the order form
+    fetchProducts();
   }, []);
 
   const handleOpenForm = () => {
@@ -120,12 +118,10 @@ const Orders = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
 
-  // Compute form values
   let formValues = initialFormValues;
   if (editMode && currentOrder) {
     formValues = {
       date: new Date(currentOrder.date).toISOString().split("T")[0],
-      // Pre-convert product objects to simple IDs
       productIds: Array.isArray(currentOrder.productIds)
         ? currentOrder.productIds.map((prod) =>
             typeof prod === "object" ? prod._id || prod.id : prod
@@ -134,7 +130,6 @@ const Orders = () => {
     };
   }
 
-  // Loading state
   if (ordersLoading) {
     return (
       <Container sx={{ display: "flex", justifyContent: "center", mt: 10 }}>

@@ -67,7 +67,6 @@ const connectToDatabase = async (uri: string) => {
   };
 };
 
-// Renamed the helper function to avoid naming conflict
 const createSalesReport = async (orders: IOrder[]): Promise<SalesReport> => {
   // Relatório diário
   const dailySales: Record<string, DailySalesEntry> = {};
@@ -101,9 +100,6 @@ const createSalesReport = async (orders: IOrder[]): Promise<SalesReport> => {
           totalAmount: 0,
         };
       }
-
-      // Como não temos o preço individual de cada produto no pedido,
-      // vamos considerar uma distribuição proporcional ao valor total
       const averagePrice = order.total / order.productIds.length;
       productSales[productIdStr].count += 1;
       productSales[productIdStr].totalAmount += averagePrice;

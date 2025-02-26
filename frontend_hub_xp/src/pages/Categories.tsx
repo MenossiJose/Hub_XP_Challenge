@@ -47,10 +47,7 @@ const Categories: React.FC = () => {
     name: "",
   };
 
-  useEffect(() => {
-    // Se necessário, chame uma função para atualizar as categorias aqui.
-    // Ex.: fetchCategories();
-  }, []);
+  useEffect(() => {}, []);
 
   const handleOpenForm = () => {
     setOpenForm(true);

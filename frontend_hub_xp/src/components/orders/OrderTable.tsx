@@ -23,7 +23,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
   onEdit,
   onDelete,
 }) => {
-  // Format date for better display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR", {
@@ -35,7 +34,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
     });
   };
 
-  // Calculate total order value
   const calculateOrderTotal = (products: any[]) => {
     if (!Array.isArray(products)) return 0;
 

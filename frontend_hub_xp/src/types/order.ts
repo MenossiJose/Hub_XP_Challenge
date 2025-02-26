@@ -1,7 +1,7 @@
 export interface Order {
-  id: string; // ID único do pedido
-  date: Date; // Data do pedido
-  productIds: string[]; // Lista de IDs dos produtos presentes no pedido
+  id: string;
+  date: Date;
+  productIds: string[];
 }
 
 export interface OrderFormData {

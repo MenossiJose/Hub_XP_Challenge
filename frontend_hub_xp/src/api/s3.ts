@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"; //Exposto por ser tratar de um desafio
 
 export const uploadFile = async (file: File): Promise<string> => {
   const formData = new FormData();

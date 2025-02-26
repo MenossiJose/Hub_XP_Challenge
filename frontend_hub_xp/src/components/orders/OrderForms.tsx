@@ -21,7 +21,7 @@ interface OrderFormProps {
   initialValues?: OrderFormData;
   onSubmit: (values: OrderFormData) => void;
   isEdit?: boolean;
-  products?: any[]; // Add products prop if not using context
+  products?: any[];
 }
 
 const getValidationSchema = () =>
@@ -40,7 +40,6 @@ const OrderForm: React.FC<OrderFormProps> = ({
 }) => {
   const { products } = useAppContext();
 
-  // Pre-process initial values to ensure productIds is always an array
   const processedValues = {
     ...initialValues,
     productIds: Array.isArray(initialValues.productIds)
@@ -51,12 +50,10 @@ const OrderForm: React.FC<OrderFormProps> = ({
   };
 
   const handleSubmitForm = (values: OrderFormData) => {
-    // Get selected products to calculate total
     const selectedProductIds = Array.isArray(values.productIds)
       ? values.productIds
       : [];
 
-    // Calculate total price from selected products
     let total = 0;
     selectedProductIds.forEach((productId) => {
       const product = products.find((p) => (p._id || p.id) === productId);
@@ -65,13 +62,12 @@ const OrderForm: React.FC<OrderFormProps> = ({
       }
     });
 
-    // Format date as YYYY-MM-DD only
     const dateString = values.date.split("T")[0];
 
     const formattedValues = {
       date: dateString,
       productIds: selectedProductIds,
-      total: total, // Add the required total field
+      total: total,
     };
     onSubmit(formattedValues);
   };
@@ -121,7 +117,6 @@ const OrderForm: React.FC<OrderFormProps> = ({
                 onBlur={handleBlur}
                 input={<OutlinedInput label="Produtos" />}
                 renderValue={(selected) => {
-                  // Ensure selected is always an array
                   const selectedArray = Array.isArray(selected) ? selected : [];
 
                   return (

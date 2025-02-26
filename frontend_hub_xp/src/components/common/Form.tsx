@@ -3,7 +3,6 @@ import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { Formik, Form as FormikForm, FormikProps } from "formik";
 import * as Yup from "yup";
 
-// Define a configuração de cada campo do formulário
 interface FormFieldConfig {
   name: string;
   label: string;
@@ -20,10 +19,8 @@ interface FormFieldConfig {
   validation?: unknown;
 }
 
-// Restringe T para objetos indexáveis
 interface FormProps<T extends Record<string, unknown>> {
   initialValues: T;
-  // Changed from array to function that returns array
   fields:
     | FormFieldConfig[]
     | ((
@@ -31,7 +28,7 @@ interface FormProps<T extends Record<string, unknown>> {
       ) => FormFieldConfig[]);
   title: string;
   onSubmit: (values: T) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   validationSchema?: Yup.ObjectSchema<any>;
   isEdit?: boolean;
 }
@@ -60,7 +57,6 @@ function GenericForm<T extends Record<string, unknown>>({
         }}
       >
         {(formikProps: FormikProps<T>) => {
-          // Get the fields, either as-is if they're an array, or by calling the function
           const fieldsArray =
             typeof fields === "function"
               ? fields(formikProps.setFieldValue)

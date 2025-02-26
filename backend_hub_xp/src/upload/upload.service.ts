@@ -49,13 +49,11 @@ export class UploadService {
         }),
       );
 
-      // Monta a URL do arquivo considerando que o endpoint já aponta para o S3 (ou LocalStack)
       const endpoint = this.configService.get<string>('AWS_ENDPOINT');
       if (!endpoint) {
         throw new InternalServerErrorException('AWS_ENDPOINT is not defined');
       }
 
-      // Replace localstack with localhost in the URL for browser access
       const browserAccessibleEndpoint = endpoint
         .replace(/\/$/, '')
         .replace('localstack', 'localhost');

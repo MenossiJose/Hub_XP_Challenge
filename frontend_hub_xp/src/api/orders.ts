@@ -2,7 +2,7 @@ import axios from "axios";
 import { Order } from "../types/order";
 import { DashboardMetrics, OrdersByPeriod } from "../types/dashboard";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"; //Exposto por ser tratar de um desafio
 
 export const getOrders = async (): Promise<Order[]> => {
   const response = await axios.get<Order[]>(`${API_URL}/orders`);
